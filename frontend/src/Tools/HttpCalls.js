@@ -2,7 +2,7 @@ const axios = require('axios');
 
 // const baseURL = 'http://0.0.0.0:3081'
 const baseURL = 'http://postman-demo.ddns.net:3081'
-
+const origin = "http://postman-demo.ddns.net"
 export const createNew = (todo) => {
     return axios.post(`${baseURL}/add`,
         {
@@ -11,6 +11,7 @@ export const createNew = (todo) => {
         {
             headers: {
                 "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": origin,
                 "username": localStorage.getItem('username')
             }
         })
@@ -26,6 +27,7 @@ export const markAsDone = (id, done) => {
         },
         {
             headers: {
+                "Access-Control-Allow-Origin": origin,
                 "username": localStorage.getItem('username')
             }
         }
@@ -38,6 +40,7 @@ export const markAsDone = (id, done) => {
 export const getAll = () => {
     return axios.get(baseURL, {
         headers: {
+            "Access-Control-Allow-Origin": origin,
             "username": localStorage.getItem('username')
         }
     })
@@ -49,6 +52,7 @@ export const getAll = () => {
 export const getById = (id) => {
     return axios.get(`${baseURL}/${id}`, {
         headers: {
+            "Access-Control-Allow-Origin": origin,
             "username": localStorage.getItem('username')
         }
     })
@@ -60,6 +64,7 @@ export const getById = (id) => {
 export const deleteById = (id) => {
     return axios.delete(`${baseURL}/delete/${id}`, {
         headers: {
+            "Access-Control-Allow-Origin": origin,
             "username": localStorage.getItem('username')
         }
     })
@@ -73,6 +78,7 @@ export const updateById = (id, body) => {
         body,
         {
             headers: {
+                "Access-Control-Allow-Origin": origin,
                 "username": localStorage.getItem('username')
             }
         }
@@ -94,6 +100,7 @@ export const sendFeedback = (feedback) => {
 export const viewFeedback = () => {
     return axios.get(`${baseURL}/feedback`,
     {headers: {
+        "Access-Control-Allow-Origin": origin,
         "username": localStorage.getItem('username')
     }})
     .catch(err => {
