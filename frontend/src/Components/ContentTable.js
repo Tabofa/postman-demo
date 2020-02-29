@@ -16,12 +16,11 @@ class ContentTable extends Component {
 
     getAll = () => {
         getAll()
-        .then(response => response.json())
-        .then(data => {
-            this.setState({
-                todo: data
+            .then(response => {
+                this.setState({
+                    todos: response.data
+                })
             })
-        })
     }
 
     handleAdd = () => {
