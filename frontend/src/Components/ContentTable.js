@@ -16,11 +16,12 @@ class ContentTable extends Component {
 
     getAll = () => {
         getAll()
-            .then(response => {
-                this.setState({
-                    todos: response.data
-                })
+        .then(response => response.json())
+        .then(data => {
+            this.setState({
+                todo: data
             })
+        })
     }
 
     handleAdd = () => {
@@ -42,10 +43,6 @@ class ContentTable extends Component {
 
     componentDidMount() {
         this.getAll()
-        .then(response => response.json())
-        .then(data => {
-            this.setState(data)
-        })
     }
 
     handleChange = (e) => {
