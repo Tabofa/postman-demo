@@ -42,6 +42,10 @@ class ContentTable extends Component {
 
     componentDidMount() {
         this.getAll()
+        .then(response => response.json())
+        .then(data => {
+            this.setState(data)
+        })
     }
 
     handleChange = (e) => {

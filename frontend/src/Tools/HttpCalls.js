@@ -38,15 +38,16 @@ export const markAsDone = (id, done) => {
 }
 
 export const getAll = () => {
-    return axios.get(baseURL, {
-        headers: {
-            "Access-Control-Allow-Origin": origin,
-            "username": localStorage.getItem('username')
-        }
-    })
-        .catch(err => {
-            console.error(err.log)
-        })
+    return fetch(baseURL)
+    // return axios.get(baseURL, {
+    //     headers: {
+    //         "Access-Control-Allow-Origin": origin,
+    //         "username": localStorage.getItem('username')
+    //     }
+    // })
+    //     .catch(err => {
+    //         console.error(err.log)
+    //     })
 }
 
 export const getById = (id) => {
