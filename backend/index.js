@@ -19,11 +19,8 @@ const collection = 'todos'
 const port = 3081; 
 const app = express();
 app.use(bp.json())
-// app.use(cors({
-//     origin: "http://localhost:3000"
-// }))
 
-app.options('*', cors())
+// app.options('*', cors())
 
 app.post('/add', (req, res) => {
     let username = req.header('username')
