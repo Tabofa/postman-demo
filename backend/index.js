@@ -19,6 +19,7 @@ const collection = 'todos'
 const port = 3081; 
 const app = express();
 app.use(bp.json())
+app.use(cors())
 
 // app.options('*', cors())
 
