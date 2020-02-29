@@ -1,10 +1,17 @@
 const express = require('express')
 const bp = require('body-parser')
 const cors = require('cors')
+const missingUser = require('./utilities').missingUser
+const invalidId = require('./utilities').invalidId
+const genericError = require('./utilities').genericError
 
-var MongoClient = require('mongodb').MongoClient;
+let MongoClient = require('mongodb').MongoClient;
 let mongo = require('mongodb')
-var url = "mongodb://localhost:27017/";
+let url = "mongodb://mongodb_container:27017/postman-demo";
+
+if(process.env.NODE_ENV === 'dev') {
+    url = "mongodb://localhost:27017/";
+}
 
 const dataBase = 'postman-demo'
 const collection = 'todos'
@@ -12,7 +19,11 @@ const collection = 'todos'
 const port = 3081; 
 const app = express();
 app.use(bp.json())
-app.use(cors())
+app.use(cors({
+    origin: "http://localhost:3000"
+}))
+
+app.options('*', cors())
 
 app.post('/add', (req, res) => {
     let username = req.header('username')
@@ -34,9 +45,11 @@ app.post('/add', (req, res) => {
         var dbo = db.db(dataBase)
         dbo.collection(collection).insertOne(todo, function(err, result) {
             if (err) {
+                console.log(err.log)
                 genericError(res)
+            } else {
+                res.status(201).json({id: result.insertedId})
             }
-            res.status(201).json({id: result.insertedId})
             db.close
         })
     })
@@ -55,8 +68,63 @@ app.get('/', (req, res) => {
         dbo.collection(collection).find({ createdBy: username }).toArray((err, result) => {
             if (err) {
                 genericError(res)
+            } else {
+                res.status(200).json(result)
             }
-            res.status(200).json(result)
+            db.close
+        })
+    })
+})
+
+app.get('/feedback', (req,res) => {
+    MongoClient.connect(url, (err, db) => {
+        if (err) throw err;
+        var dbo = db.db(dataBase)
+        let query = [
+            {
+                $group: {
+                    _id: {
+                        question: "$question",
+                        answer: "$answer"
+                    },
+                    count: { "$sum": 1 }
+                }
+            },
+            {
+                "$group": {
+                    _id: "$_id.question",
+                    answers: {
+                        $push: {
+                            "answer": "$_id.answer",
+                            "count": "$count"
+                        }
+                    }
+                }
+            }
+        ]
+        dbo.collection('feedback').aggregate(query).toArray((err, result) => {
+            if (err) {
+                console.log(err.log)
+                genericError(res)
+            } else {
+                res.status(200).json(result)
+            }
+            db.close
+        })
+    })
+})
+
+app.post('/feedback', (req,res) => {
+    MongoClient.connect(url, (err, db) => {
+        if (err) throw err;
+        var dbo = db.db(dataBase)
+        dbo.collection('feedback').insertMany(req.body, function(err, result) {
+            if (err) {
+                console.log(err.log)
+                genericError(res)
+            } else {
+                res.status(201).json({statusCode: 201, context: 'Created'})
+            }
             db.close
         })
     })
@@ -81,11 +149,13 @@ app.get('/:id', (req, res) => {
         dbo.collection(collection).find({ _id: o_id, createdBy: username }).toArray((err, result) => {
             if (err) {
                 genericError(res)
+            } else {
+                if(result.length === 0) {
+                    res.status(404).json({statusCode: 404, context: "No task found with provided ID."})
+                } else {
+                    res.status(200).json(result)
+                }
             }
-            if(result.length === 0) {
-                res.status(404).json({statusCode: 404, context: "No task found with provided ID."})
-            }
-            res.status(200).json(result)
             db.close
         })
     })
@@ -125,8 +195,9 @@ app.patch('/update/:id', (req,res) => {
         dbo.collection(collection).updateOne({ _id: o_id, createdBy: username }, newValues, function(err, result) {
             if (err) {
                 genericError(res)
+            } else {
+                res.status(204).json(result)
             }
-            res.status(204).json(result)
             db.close
         })
     })
@@ -151,51 +222,16 @@ app.delete('/delete/:id', (req, res) => {
         dbo.collection(collection).deleteOne({ _id: o_id, createdBy: username }, function(err, obj) {
             if (err) {
                 genericError(res)
-            }
-            if(obj.result.n === 1) {
-                res.status(204).send()
             } else {
-                res.status(404).json({'statusCode': 404, 'context': 'Did not find todo with id: '+ req.params.id})
-            } 
-            
+                if(obj.result.n === 1) {
+                    res.status(204).send()
+                } else {
+                    res.status(404).json({'statusCode': 404, 'context': 'Did not find todo with id: '+ req.params.id})
+                } 
+            }
             db.close
         })
     })
 })
 
-app.post('/bug', (req,res) => {
-    console.log('Bug reported')
-    res.status(200).json({'response': 'Thank you for the bug report'})
-})
-
-app.get('/bug', (req, res) => {
-    console.log('Bug report requested')
-    res.status(200).json([{'bug': 'description'}])
-})
-
-app.post('/feedback', (req,res) => {
-    console.log('Feedback submitted')
-    res.status(200).json({'response': 'Thank you for the feedback!'})
-})
-
-app.get('/feedback', (req,res) => {
-    console.log('feedback requested')
-    res.status(200).json([{'feedback': 'some feedback'}])
-})
-
 app.listen(port, () => console.log(`API running on port: ${port}`))
-
-const missingUser = (res) => {
-    res.status(404).json({'statusCode': 404, 'context': 'Missing user.'})
-    console.log('Error 404 - missing username')
-}
-
-const invalidId = (res) => {
-    res.status(404).json({'statusCode': 404, 'context': 'Invalid ID.'})
-    console.log('Error 404 - Invalid ID')
-}
-
-const genericError = (res) => {
-    res.status(400).json({statusCode: 400, context: "Something whent wrong."})
-    console.log('Error 400 - Generic Error')
-}

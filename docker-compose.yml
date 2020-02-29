@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+
+  postman_frontend:
+    container_name: postman-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:80
+
+  postman_backend:
+    container_name: postman-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 3081:3081
+    links:
+      - mongodb_container
+
+  mongodb_container:
+    image: mongo:latest
+    container_name: mongodb_container
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: postman
+    #   MONGO_INITDB_ROOT_PASSWORD: demo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+
+volumes:
+  mongodb_data_container:
