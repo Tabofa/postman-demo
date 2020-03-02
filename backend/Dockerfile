@@ -3,6 +3,7 @@ FROM node:12.2.0-alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json /app/package.json
+RUN npm install pm2 -g
 RUN npm install --silent
 COPY . /app
 # RUN npm run build
@@ -11,4 +12,4 @@ COPY . /app
 # FROM nginx:1.16.0-alpine
 # COPY --from=build /app /usr/share/nginx/html
 EXPOSE 80
-CMD ["node", "./index.js"]
+CMD ["pm2-runtime", "./index.js"]
