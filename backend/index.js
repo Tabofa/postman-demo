@@ -42,13 +42,13 @@ app.post('/add', (req, res) => {
         if (err) throw err;
         var dbo = db.db(dataBase)
         dbo.collection(collection).insertOne(todo, function(err, result) {
+            db.close
             if (err) {
                 console.log(err.log)
                 genericError(res)
             } else {
                 res.status(201).json({id: result.insertedId})
             }
-            db.close
         })
     })
 })
@@ -64,12 +64,12 @@ app.get('/', (req, res) => {
         if (err) throw err;
         var dbo = db.db(dataBase)
         dbo.collection(collection).find({ createdBy: username }).toArray((err, result) => {
+            db.close
             if (err) {
                 genericError(res)
             } else {
                 res.status(200).json(result)
             }
-            db.close
         })
     })
 })
@@ -101,13 +101,13 @@ app.get('/feedback', (req,res) => {
             }
         ]
         dbo.collection('feedback').aggregate(query).toArray((err, result) => {
+            db.close
             if (err) {
                 console.log(err.log)
                 genericError(res)
             } else {
                 res.status(200).json(result)
             }
-            db.close
         })
     })
 })
@@ -117,13 +117,13 @@ app.post('/feedback', (req,res) => {
         if (err) throw err;
         var dbo = db.db(dataBase)
         dbo.collection('feedback').insertMany(req.body, function(err, result) {
+            db.close
             if (err) {
                 console.log(err.log)
                 genericError(res)
             } else {
                 res.status(201).json({statusCode: 201, context: 'Created'})
             }
-            db.close
         })
     })
 })
@@ -145,6 +145,7 @@ app.get('/:id', (req, res) => {
         var dbo = db.db(dataBase)
         let o_id = new mongo.ObjectId(req.params.id) 
         dbo.collection(collection).find({ _id: o_id, createdBy: username }).toArray((err, result) => {
+            db.close
             if (err) {
                 genericError(res)
             } else {
@@ -154,7 +155,6 @@ app.get('/:id', (req, res) => {
                     res.status(200).json(result)
                 }
             }
-            db.close
         })
     })
 })
@@ -191,12 +191,12 @@ app.patch('/update/:id', (req,res) => {
         let newValues = {$set: patch}
 
         dbo.collection(collection).updateOne({ _id: o_id, createdBy: username }, newValues, function(err, result) {
+            db.close
             if (err) {
                 genericError(res)
             } else {
                 res.status(204).json(result)
             }
-            db.close
         })
     })
 })
@@ -218,6 +218,7 @@ app.delete('/delete/:id', (req, res) => {
         var dbo = db.db(dataBase)
         let o_id = new mongo.ObjectId(req.params.id) 
         dbo.collection(collection).deleteOne({ _id: o_id, createdBy: username }, function(err, obj) {
+            db.close
             if (err) {
                 genericError(res)
             } else {
@@ -227,7 +228,6 @@ app.delete('/delete/:id', (req, res) => {
                     res.status(404).json({'statusCode': 404, 'context': 'Did not find todo with id: '+ req.params.id})
                 } 
             }
-            db.close
         })
     })
 })
