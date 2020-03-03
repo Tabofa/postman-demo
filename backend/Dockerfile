@@ -11,5 +11,5 @@ COPY . /app
 # production environment
 # FROM nginx:1.16.0-alpine
 # COPY --from=build /app /usr/share/nginx/html
-EXPOSE 80
+EXPOSE 3081
 CMD ["pm2-runtime", "./index.js"]
