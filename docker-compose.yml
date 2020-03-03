@@ -11,6 +11,7 @@ services:
       - 80:80
 
   postman_backend:
+    restart: always
     container_name: postman-backend
     build:
       context: ./backend
