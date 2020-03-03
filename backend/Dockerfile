@@ -6,10 +6,6 @@ COPY package.json /app/package.json
 RUN npm install pm2 -g
 RUN npm install --silent
 COPY . /app
-# RUN npm run build
 
-# production environment
-# FROM nginx:1.16.0-alpine
-# COPY --from=build /app /usr/share/nginx/html
 EXPOSE 3081
-CMD ["pm2-runtime", "./index.js"]
+CMD ["pm2-runtime", "index.js"]
