@@ -8,4 +8,4 @@ RUN npm install --silent
 COPY . /app
 
 EXPOSE 3081
-CMD ["pm2-runtime", "index.js"]
+CMD ["pm2-runtime", "./index.js"]
