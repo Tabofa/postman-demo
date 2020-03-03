@@ -42,7 +42,7 @@ app.post('/add', (req, res) => {
         if (err) throw err;
         var dbo = db.db(dataBase)
         dbo.collection(collection).insertOne(todo, function(err, result) {
-            db.close
+            db.close()
             if (err) {
                 console.log(err.log)
                 genericError(res)
@@ -64,7 +64,7 @@ app.get('/', (req, res) => {
         if (err) throw err;
         var dbo = db.db(dataBase)
         dbo.collection(collection).find({ createdBy: username }).toArray((err, result) => {
-            db.close
+            db.close()
             if (err) {
                 genericError(res)
             } else {
@@ -101,7 +101,7 @@ app.get('/feedback', (req,res) => {
             }
         ]
         dbo.collection('feedback').aggregate(query).toArray((err, result) => {
-            db.close
+            db.close()
             if (err) {
                 console.log(err.log)
                 genericError(res)
@@ -117,7 +117,7 @@ app.post('/feedback', (req,res) => {
         if (err) throw err;
         var dbo = db.db(dataBase)
         dbo.collection('feedback').insertMany(req.body, function(err, result) {
-            db.close
+            db.close()
             if (err) {
                 console.log(err.log)
                 genericError(res)
@@ -145,7 +145,7 @@ app.get('/:id', (req, res) => {
         var dbo = db.db(dataBase)
         let o_id = new mongo.ObjectId(req.params.id) 
         dbo.collection(collection).find({ _id: o_id, createdBy: username }).toArray((err, result) => {
-            db.close
+            db.close()
             if (err) {
                 genericError(res)
             } else {
@@ -191,7 +191,7 @@ app.patch('/update/:id', (req,res) => {
         let newValues = {$set: patch}
 
         dbo.collection(collection).updateOne({ _id: o_id, createdBy: username }, newValues, function(err, result) {
-            db.close
+            db.close()
             if (err) {
                 genericError(res)
             } else {
@@ -218,7 +218,7 @@ app.delete('/delete/:id', (req, res) => {
         var dbo = db.db(dataBase)
         let o_id = new mongo.ObjectId(req.params.id) 
         dbo.collection(collection).deleteOne({ _id: o_id, createdBy: username }, function(err, obj) {
-            db.close
+            db.close()
             if (err) {
                 genericError(res)
             } else {
