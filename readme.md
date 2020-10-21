@@ -61,3 +61,79 @@ docker-compose down
 
 ### Disclaimer
 The software is delivered as is and may be used under however the end user wishes. The developer of this demo-app takes no responasbility for anything reguarding the application in this repository. Use on own risk.
+
+# Documentation
+## Add
+POST: /add
+
+Header: application/JSON
+```
+{ 
+    "username": string
+}
+```
+
+Body: application/JSON
+```
+{
+    "todo": string
+}
+```
+
+Successful response: 201 Created
+
+## Get all records
+GET: /
+
+Header: application/JSON
+```
+{ 
+    "username": string
+}
+```
+
+Successful response: 200 OK
+
+## Get specific
+GET: /{id}
+
+Header: application/JSON
+```
+{ 
+    "username": string
+}
+```
+
+Successful response: 200 OK
+
+## Update
+PATCH: /update/{id}
+
+Header: application/JSON
+```
+{ 
+    "username": string
+}
+```
+
+Body: application/JSON
+```
+{
+    "done": boole,
+    "todo": string
+}
+```
+
+Successful response: 204 No Content
+
+## Delete
+DELETE: /delete/{id}
+
+Header: application/JSON
+```
+{ 
+    "username": string
+}
+```
+
+Successful response: 204 No Content
